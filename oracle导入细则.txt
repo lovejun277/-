@@ -1,0 +1,24 @@
+AO审计案例 －－应用AO审计社保基金案例 一、安装ORACLE 二、采集数据 　　1、要求被审计单位 　　2、将oracle备份数据导入oracle数据库中 　　3、将oracle数据库导入SQL　server　2008数据库中 三、分析数据 四、几点体会 　　一、安装ORACLE 　　二、采集数据 1、要求被审计单位提供信息系统的数据库全备份 （1）提供方便，有现成的备份数据。 （2）数据齐全，不会被屏蔽掉部分数据。 （3）采集时间短，直接复制。 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （1）用system用户名和密码登录Oracle数据库。 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （2）创建用户和密码 语法： Create user zal290 identified by zal290; 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （3）分配权限 语法： Grant create session,dba to zal290; 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （4）用创建的用户名和密码登录Oracle数据库 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （5）建立数据库的数据空间 语法： Create tablespace sidb datafile 'c:\zal\sbj2010.dbf' size 20000M; Alter tablespace sidb add datafile 'c:\zal\sbj2010_1.dbf' size 2000M; 　　二、采集数据 2、将oracle备份数据导入oracle数据库中 （6）用IMP命令导入数据 语法： imp zal291/zal291 fromuser=SIDB touser=zal291 file=G:\sbj\simisdata\YSL_BM.dmp log=smc_imp14.log buffer=1024000 ignore=y commit=y grants=n indexes=n 　　二、采集数据 3、将oracle数据库导入SQL server　2008数据库中 （1）建立oralce 数据库的ODBC数据源 控制面板\管理工具\数据源(ODBC) 　　二、采集数据 3、将oracle数据库导入SQL server　2008数据库中 （2）利用AO的“采集转换”功能将oracle数据库导入AO中 业务数据\采集数据\新建“电子数据” 进入“数据导入向导”、选择ODBC数据源、根据相关内容进行选择。 三、分析数据 （一）个人账户利息计付错误。 1、审计思路 在社保信息系统业务处理流程中，个人账户利息计付是其一个关键环节，利息计付方法准确与否关系到每个参保人员的切身利益和社保基金的安全，涉及到社会的稳定。因此，在前二年审计的基础上，本次审计对个人账户利息的计付是否准确进行重点关注。 三、分析数据 （一）个人账户利息计付错误。 2、审计步骤 第一步：对个人账户利息计算涉及的数据进行结构分析 三、分析数据 （一）个人账户利息计付错误。 2、审计步骤 第二步：分析了解在信息系统中个人账户利息是如何计算的 参保人员每年的利息总和为＝（6） SNGRLX+（7）SNDWLX+（10）QNGRLX +（11）QNDWLX +（12）BNGRLX +（13）BNDWLX 三、分析数据 （一）个人账户利息计付错误。 2、审计步骤 第三步：分析信息系统的个人账户利息计算方法是否正确，是否存在多或少计息的现象存在，主要是通过抽查个人账户利息进行重新计算测试。 三、分析数据 （一）个人账户利息计付错误。 2、审计步骤 根据《职工基本养老保险个人账户管理暂行办法》第15条，个人账户存储金额正确的计算方法为：“……方法二：月积数法。……至本年度止个人账户累计储存额＝上年底止个人账户累计储存额×（1＋本年记账利率）＋本年记账额本金＋本年记账额利息”。其中“上年底止个人账户累计储存额”应等于上年底止个人实际缴费（本金）加上利息。 三、分析数据 （一）个人账户利息计付错误。 2、审计步骤 通过对比，发现手工计算结果与系统计算结果不一致。经对提供的社保基金管理信息系统计算程序进行了解，发现该信息系统“上年底止个人账户累计储存额×（1＋本年记账利率）”的止息日期为本年度年中某个日期（如9月），而“本年记账额本金＋本年记账额利息”的计息时间为本年度1至12月份，造成1至9月份重复计算利息，导致信息系统计算的“至本年度止个人账户累计储存额”大于按政策规定手工计算结果。如图所示。 
+
+
+imp hn430422/orcl@orcl file=G:\2025财政一体化\hnczdb\hnczdb.dmp full=y ignore=y
+
+
+imp hn430422/orcl@orcl file=F:\数据集\20250312\hnczdb.dmp full=y ignore=y
+
+
+---------删除fsnew表空间及其文件-------------------
+
+DROP TABLESPACE FSNEW
+INCLUDING CONTENTS AND DATAFILES 
+CASCADE CONSTRAINTS;
+
+---------查看表空间信息-------------------
+SELECT 
+    tablespace_name, 
+    file_name, 
+    bytes / 1024 / 1024 AS size_mb
+FROM 
+    dba_data_files
+ORDER BY 
+    tablespace_name;
